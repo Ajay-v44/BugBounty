@@ -14,6 +14,9 @@
     <link rel="stylesheet" href="{% static 'src/output.css' %}" />
 
     {% endcompress %}
+    <link rel="icon" href=
+    "{% static 'images/logo.png' %}"
+              type="image/x-icon">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" integrity="sha512-DTOQO9RWCH3ppGqcWaEA1BIZOC6xxalwEsw9c2QQeAIftl+Vegovlnee1c9QX4TctnWMn13TZye+giMm8e2LwA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
     <script>
       // On page load or when changing themes, best to add inline in `head` to avoid FOUC
@@ -35,17 +38,17 @@
         class="max-w-screen-xl flex flex-wrap items-center justify-between mx-auto p-4"
       >
         <a
-          href="https://flowbite.com/"
+          href="{% url "index" %}"
           class="flex items-center space-x-3 rtl:space-x-reverse"
         >
           <img
-            src="https://flowbite.com/docs/images/logo.svg"
+            src="{% static 'images/logo.png' %}"
             class="h-8"
             alt="Flowbite Logo"
           />
           <span
             class="self-center text-2xl font-semibold whitespace-nowrap dark:text-white"
-            >Flowbite</span
+            >BugBounty</span
           >
         </a>
         <div class="flex md:order-2">
@@ -168,20 +171,38 @@
                 >Home</a
               >
             </li>
+            {% if request.user.is_authenticated %}
             <li>
               <a
-                href="{% url "register" %}"
+                href="{% url "userprofile" %}"
+                class="block py-2 px-3 text-gray-900 rounded hover:bg-gray-100 md:hover:bg-transparent md:hover:text-blue-700 md:p-0 md:dark:hover:text-blue-500 dark:text-white dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent dark:border-gray-700"
+                >User Profile</a
+              >
+            </li>
+            <li>
+              <a
+                href="{% url "logout" %}"
+                class="block py-2 px-3 text-gray-900 rounded hover:bg-gray-100 md:hover:bg-transparent md:hover:text-blue-700 md:p-0 dark:text-white md:dark:hover:text-blue-500 dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent dark:border-gray-700"
+                >Logout</a
+              >
+            </li>
+            {% else %}
+            <li>
+              <a
+                href="{% url "login" %}"
                 class="block py-2 px-3 text-gray-900 rounded hover:bg-gray-100 md:hover:bg-transparent md:hover:text-blue-700 md:p-0 md:dark:hover:text-blue-500 dark:text-white dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent dark:border-gray-700"
                 >Login</a
               >
             </li>
             <li>
               <a
-                href="#"
+                href="{% url "register" %}"
                 class="block py-2 px-3 text-gray-900 rounded hover:bg-gray-100 md:hover:bg-transparent md:hover:text-blue-700 md:p-0 dark:text-white md:dark:hover:text-blue-500 dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent dark:border-gray-700"
-                >Services</a
+                >register</a
               >
             </li>
+            
+            {% endif %}
           </ul>
         </div>
       </div>
@@ -218,25 +239,57 @@
         ></path>
       </svg>
     </button>
+
+   
+    {% if messages %}
+    
+    <div class="flex justify-center items-center mt-5">
+      <div id="toast-message-cta" class=" max-w-xs p-4 text-gray-500 bg-white rounded-lg shadow dark:bg-gray-800 dark:text-gray-400" role="alert">
+        <div class="flex">
+            <img class="w-10 h-10 rounded-full object-contain" src="{% static 'images/ai.avif' %}" alt="Jese Leos image"/>
+            <div class="ms-3 text-sm font-normal">
+                <span class="mb-1 text-sm font-semibold text-gray-900 dark:text-white">Malu AI</span>
+                {% for message in messages  %}
+                <div class="mb-2 text-sm font-normal capitalize">Hi {{request.user}}, {{message}}.</div> {% endfor %}
+                <a href="#" class="inline-flex px-2.5 py-1.5 text-xs font-medium text-center text-white bg-blue-600 rounded-lg hover:bg-blue-700 focus:ring-4 focus:outline-none focus:ring-blue-300 dark:bg-blue-500 dark:hover:bg-blue-600 dark:focus:ring-blue-800">Reply</a>   
+            </div>
+            <button type="button" class="ms-auto -mx-1.5 -my-1.5 bg-white justify-center items-center flex-shrink-0 text-gray-400 hover:text-gray-900 rounded-lg focus:ring-2 focus:ring-gray-300 p-1.5 hover:bg-gray-100 inline-flex h-8 w-8 dark:text-gray-500 dark:hover:text-white dark:bg-gray-800 dark:hover:bg-gray-700" data-dismiss-target="#toast-message-cta" aria-label="Close">
+                <span class="sr-only">Close</span>
+                <svg class="w-3 h-3" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 14 14">
+                    <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m1 1 6 6m0 0 6 6M7 7l6-6M7 7l-6 6"/>
+                </svg>
+            </button>
+        </div>
+      </div>
+      
+    
+    </div>
+    {% endif %}
+
+
     <!-- End of new HTML -->
 
     <div class="container mx-auto mt-4">
       {% block content %} {% endblock content %}
     </div>
 
+  
+
+
+
     <footer class="bg-white dark:bg-gray-900 mt-auto md:mt-28">
       <div class="mx-auto w-full max-w-screen-xl p-4 py-6 lg:py-8">
         <div class="md:flex md:justify-between">
           <div class="mb-6 md:mb-0">
-            <a href="https://flowbite.com/" class="flex items-center">
+            <a href="{% url "index" %}" class="flex items-center">
               <img
-                src="https://flowbite.com/docs/images/logo.svg"
+                src="{% static 'images/logo.png' %}"
                 class="h-8 me-3"
                 alt="FlowBite Logo"
               />
               <span
                 class="self-center text-2xl font-semibold whitespace-nowrap dark:text-white"
-                >Flowbite</span
+                >BugBounty™</span
               >
             </a>
           </div>
@@ -249,13 +302,13 @@
               </h2>
               <ul class="text-gray-500 dark:text-gray-400 font-medium">
                 <li class="mb-4">
-                  <a href="https://flowbite.com/" class="hover:underline"
-                    >Flowbite</a
+                  <a href="{% url "index" %}" class="hover:underline"
+                    >BugBounty</a
                   >
                 </li>
                 <li>
-                  <a href="https://tailwindcss.com/" class="hover:underline"
-                    >Tailwind CSS</a
+                  <a href="{% url "index" %}" class="hover:underline"
+                    >BugBounty</a
                   >
                 </li>
               </ul>
@@ -269,14 +322,14 @@
               <ul class="text-gray-500 dark:text-gray-400 font-medium">
                 <li class="mb-4">
                   <a
-                    href="https://github.com/themesberg/flowbite"
+                    href=""
                     class="hover:underline"
                     >Github</a
                   >
                 </li>
                 <li>
                   <a
-                    href="https://discord.gg/4eeurUVvTy"
+                    href=""
                     class="hover:underline"
                     >Discord</a
                   >
@@ -305,8 +358,8 @@
         />
         <div class="sm:flex sm:items-center sm:justify-between">
           <span class="text-sm text-gray-500 sm:text-center dark:text-gray-400"
-            >© 2023
-            <a href="https://flowbite.com/" class="hover:underline">Flowbite™</a
+            >© 2024
+            <a href="" class="hover:underline">BugBounty™</a
             >. All Rights Reserved.
           </span>
           <div class="flex mt-4 sm:justify-center sm:mt-0">

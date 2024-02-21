@@ -174,3 +174,6 @@ dist
 pnpm-lock.yaml
 .node-objects
 pnpmfile.js
+env2
+package.json
+db.sqlite3
