@@ -1,0 +1,9 @@
+asgiref==3.7.2
+Django==5.0.2
+django-appconf==1.0.6
+django-compressor==4.4
+pillow==10.2.0
+rcssmin==1.1.1
+rjsmin==1.2.1
+sqlparse==0.4.4
+tzdata==2024.1
