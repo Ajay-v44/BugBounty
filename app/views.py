@@ -33,10 +33,8 @@ def login_user(request):
     if request.method == "POST":
         username = request.POST['username']
         password = request.POST['password']
-        print(username,password)
         if username != "" and password != "":
             query = authenticate(request, username=username, password=password)
-            print(query)
             if query is None:
                 messages.error(request, "Invalid Credentials")
             else:
@@ -54,3 +52,6 @@ def logout_user(request):
 
 def userprofile(request):
     return render(request, 'profile.html')
+
+def addUserProfile(request):
+    return render(request,'addprofile.html')
