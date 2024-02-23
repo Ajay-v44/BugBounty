@@ -4,6 +4,7 @@ from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User, auth
 from django.contrib.auth import authenticate, login, logout
+from .models import *
 # Create your views here.
 
 
@@ -13,9 +14,8 @@ def index(request):
 
 def register(request):
     if request.method == "POST":
-        if User.objects.filter(email=request.POST['email']).exists():
-            messages.warning(request, 'Email already exists')
-
+        if User.objects.filter(email=request.POST['email']).exists() or User.objects.filter(username=request.POST['username']).exists():
+            messages.warning(request, 'Username / Email already exists')
         else:
             if request.POST['password'] != request.POST['repeat_password']:
                 messages.warning(request, 'Passwords dont match')
@@ -25,7 +25,7 @@ def register(request):
                 query.set_password(request.POST['password'])
                 query.save()
                 messages.success(request, 'User Created Successfully')
-                return redirect(login)
+                return redirect(login_user)
     return render(request, 'register.html')
 
 
@@ -39,19 +39,67 @@ def login_user(request):
                 messages.error(request, "Invalid Credentials")
             else:
                 login(request, query)
-                messages.success(request,'Welcome To BugBounty')
-                return redirect(index)
+                messages.success(request, 'Welcome To BugBounty')
+                if UserProfile.objects.filter(user=request.user).exists():
+                    return redirect(index)
+                else:
+                    return redirect(addUserProfile)
         else:
             messages.warning(request, "Null Values are not allowed")
     return render(request, 'login.html')
+
+
 def logout_user(request):
     logout(request)
     return redirect(login_user)
 
 
+def user_profile(request):
+    query = UserProfile.objects.filter(user=request.user)
+    if query:
+        return render(request, 'profile.html', {"query": query})
+    else:
+        return redirect(addUserProfile)
 
-def userprofile(request):
-    return render(request, 'profile.html')
 
 def addUserProfile(request):
-    return render(request,'addprofile.html')
+    if request.method == "POST":
+        UserProfile.objects.create(user=request.user, profilepicture=request.FILES.get('profile'), banner=request.FILES.get(
+            'banner'), about=request.POST['about'], phone=request.POST['phone'], bugcrowd=request.POST['bugcrowd'], fb=request.POST['facebook'], twitter=request.POST['twitter'], insta=request.POST['instagram'])
+        messages.info(request, "Data Updated Sccessfully")
+        return redirect(user_profile)
+    return render(request, 'addprofile.html')
+
+
+@login_required(login_url='/login')
+def updateUserProfile(request):
+    query = UserProfile.objects.filter(user=request.user).first()
+    context = UserProfile.objects.filter(user=request.user)
+    if request.method == "POST":
+        profile_picture = request.FILES.get('profile')
+        banner_picture = request.FILES.get('banner')
+        about = request.POST.get('about')
+        phone = request.POST.get('phone')
+        bugcrowd = request.POST.get('bugcrowd')
+        fb = request.POST.get('facebook')
+        twitter = request.POST.get('twitter')
+        insta = request.POST.get('instagram')
+
+        if profile_picture:
+            query.profilepicture = profile_picture
+        if banner_picture:
+            query.banner = banner_picture
+
+        query.about = about
+        query.phone = phone
+        query.bugcrowd = bugcrowd
+        query.fb = fb
+        query.twitter = twitter
+        query.insta = insta
+
+        query.save()
+
+        messages.info(request, "Data Updated Successfully")
+        return redirect(user_profile)
+
+    return render(request, 'addprofile.html', {"query": context})

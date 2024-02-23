@@ -1,35 +1,50 @@
 {% extends 'base.html' %} {% load static %} {% block content %}
 <div class="flex flex-col md:flex-row justify-start items-center px-5 md:px-20">
-  {% block pcontent %}
-  <div class="m-10 dark:bg-dark">
+  {% block pcontent %} {% for data in query %}
+  <div class="m-10 dark:bg-dark w-auto md:w-[100rem]">
     <div class="flex justify-center items-center">
+      {% if data.banner %}
+      
+      <img
+        src="{{data.banner.url}}"
+        alt=""
+        class="h-64 w-auto md:w-[40rem] rounded-lg object-fill border border-dotted "
+      />
+      {% else %}
       <img
         src="{% static 'images/wallpaper.jpg' %}"
         alt=""
-        class="h-64 rounded-lg "
+        class="h-64 w-auto md:w-[40rem] rounded-lg"
       />
+      {% endif %}
+      
     </div>
-    <div class="">
+    
       <div class="flex justify-center items-start relative bottom-24 z-10">
-        <img
-          src="https://www.disneyplusinformer.com/wp-content/uploads/2021/06/Luca-Profile-Avatars-3.png"
+      {% if data.profilepicture %}
+      <img
+          src="{{data.profilepicture.url}}"
           alt=""
-          class="w-52 border border-orange-400 rounded-full object-contain cursor-pointer"
+          class="w-52 h-52 border border-orange-400 rounded-full object-fill cursor-pointer"
         />
-      </div>
+        {% else %}
+        <img
+        src="{% static 'images/profilepic.webp' %}"
+        alt=""
+        class="w-52 h-52 border border-orange-400 rounded-full object-fill cursor-pointer"
+      />
+      {% endif %}
+        
+    
     </div>
     <div class="dark:text-white flex flex-col justify-center items-center">
       <h1 class="text-xl capitalize hover:text-orange-400 cursor-pointer">
-        User Name
+        {{request.user}}
       </h1>
       <p
-        class="mb-3 text-left rtl:text-right text-gray-500 dark:text-gray-400 mt-3"
+        class="mb-3 capitalize rtl:text-right text-gray-500 dark:text-gray-400 mt-3 text-justify"
       >
-        Track work across the enterprise through an open, collaborative
-        platform. Link issues across Jira and ingest data from other software
-        development tools, so your IT support and operations teams have richer
-        contextual information to rapidly respond to requests, incidents, and
-        changes.
+        {{data.about}}
       </p>
       <div class="flex gap-10">
         <button
@@ -37,7 +52,7 @@
           class="text-white bg-yellow-400 hover:bg-yellow-500 focus:outline-none focus:ring-4 focus:ring-yellow-300 font-medium rounded-full text-sm px-5 py-2.5 text-center me-2 mb-2 dark:focus:ring-yellow-900"
         >
           Successful Collbaration -
-          <span class="text-green-500 text-lg">4</span>
+          <span class="text-green-500 text-lg">{{data.collabs}}</span>
         </button>
         <button
           class="relative inline-flex items-center justify-center p-0.5 mb-2 me-2 overflow-hidden text-sm font-medium text-gray-900 rounded-lg group bg-gradient-to-br from-purple-600 to-blue-500 group-hover:from-purple-600 group-hover:to-blue-500 hover:text-white dark:text-white focus:ring-4 focus:outline-none focus:ring-blue-300 dark:focus:ring-blue-800"
@@ -137,7 +152,8 @@
                 <ul class="my-4 space-y-3">
                   <li>
                     <a
-                      href="#"
+                      href="{{data.bugcrowd}}"
+                      onclick="alert('You are redirecting to an external site')"
                       class="flex items-center p-3 text-base font-bold text-gray-900 rounded-lg bg-gray-50 hover:bg-gray-100 group hover:shadow dark:bg-gray-600 dark:hover:bg-gray-500 dark:text-white"
                     >
                       <svg
@@ -162,7 +178,8 @@
                   </li>
                   <li>
                     <a
-                      href="#"
+                      href="{{data.twitter}}"
+                      onclick="alert('You are redirecting to an external site')"
                       class="flex items-center p-3 text-base font-bold text-gray-900 rounded-lg bg-gray-50 hover:bg-gray-100 group hover:shadow dark:bg-gray-600 dark:hover:bg-gray-500 dark:text-white"
                     >
                       <svg
@@ -177,14 +194,13 @@
                           d="M13.8 10.5 20.7 2h-3l-5.3 6.5L7.7 2H1l7.8 11-7.3 9h3l5.7-7 5.1 7H22l-8.2-11.5Zm-2.4 3-1.4-2-5.6-7.9h2.3l4.5 6.3 1.4 2 6 8.5h-2.3l-4.9-7Z"
                         />
                       </svg>
-                      <span class="flex-1 ms-3 whitespace-nowrap"
-                        >Twitter</span
-                      >
+                      <span class="flex-1 ms-3 whitespace-nowrap">Twitter</span>
                     </a>
                   </li>
                   <li>
                     <a
-                      href="#"
+                      href="{{data.fb}}"
+                      onclick="alert('You are redirecting to an external site')"
                       class="flex items-center p-3 text-base font-bold text-gray-900 rounded-lg bg-gray-50 hover:bg-gray-100 group hover:shadow dark:bg-gray-600 dark:hover:bg-gray-500 dark:text-white"
                     >
                       <svg
@@ -208,24 +224,83 @@
                   </li>
                   <li>
                     <a
-                      href="#"
+                      href="{{data.insta}}"
+                      onclick="alert('You are redirecting to an external site')"
                       class="flex items-center p-3 text-base font-bold text-gray-900 rounded-lg bg-gray-50 hover:bg-gray-100 group hover:shadow dark:bg-gray-600 dark:hover:bg-gray-500 dark:text-white"
                     >
                       <i class="fa-brands fa-instagram text-pink-600"></i>
 
-                      <span class="flex-1 ms-3 whitespace-nowrap "
+                      <span class="flex-1 ms-3 whitespace-nowrap"
                         >Instagram</span
                       >
                     </a>
                   </li>
                   <li>
-                    <a
-                      href="#"
-                      class="flex items-center p-3 text-base font-bold text-gray-900 rounded-lg bg-gray-50 hover:bg-gray-100 group hover:shadow dark:bg-gray-600 dark:hover:bg-gray-500 dark:text-white"
-                    >
-                      <i class="fa-solid fa-phone text-blue-500"></i>
-                      <span class="flex-1 ms-3 whitespace-nowrap">Phone</span>
-                    </a>
+                    <div class="w-full max-w-[16rem]">
+                      <div class="relative">
+                        <label for="npm-install-copy-text" class="sr-only"
+                          >Label</label
+                        >
+                        <input
+                          id="npm-install-copy-text"
+                          type="text"
+                          class="col-span-6 bg-gray-50 border border-gray-300 text-gray-500 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full px-2.5 py-4 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-gray-400 dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                          {% if data.phone %}value="{{data.phone}}"
+                          
+                          {% else %}
+                          value="No Phone Number"
+                          {% endif %}
+                          disabled
+                          readonly
+                        />
+                        <button
+                          data-copy-to-clipboard-target="npm-install-copy-text"
+                          class="absolute end-2.5 top-1/2 -translate-y-1/2 text-gray-900 dark:text-gray-400 hover:bg-gray-100 dark:bg-gray-800 dark:border-gray-600 dark:hover:bg-gray-700 rounded-lg py-2 px-2.5 inline-flex items-center justify-center bg-white border-gray-200 border"
+                        >
+                          <span
+                            id="default-message"
+                            class="inline-flex items-center"
+                          >
+                            <svg
+                              class="w-3 h-3 me-1.5"
+                              aria-hidden="true"
+                              xmlns="http://www.w3.org/2000/svg"
+                              fill="currentColor"
+                              viewBox="0 0 18 20"
+                            >
+                              <path
+                                d="M16 1h-3.278A1.992 1.992 0 0 0 11 0H7a1.993 1.993 0 0 0-1.722 1H2a2 2 0 0 0-2 2v15a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V3a2 2 0 0 0-2-2Zm-3 14H5a1 1 0 0 1 0-2h8a1 1 0 0 1 0 2Zm0-4H5a1 1 0 0 1 0-2h8a1 1 0 1 1 0 2Zm0-5H5a1 1 0 0 1 0-2h2V2h4v2h2a1 1 0 1 1 0 2Z"
+                              />
+                            </svg>
+                            <span class="text-xs font-semibold">Copy</span>
+                          </span>
+                          <span
+                            id="success-message"
+                            class="hidden inline-flex items-center"
+                          >
+                            <svg
+                              class="w-3 h-3 text-blue-700 dark:text-blue-500 me-1.5"
+                              aria-hidden="true"
+                              xmlns="http://www.w3.org/2000/svg"
+                              fill="none"
+                              viewBox="0 0 16 12"
+                            >
+                              <path
+                                stroke="currentColor"
+                                stroke-linecap="round"
+                                stroke-linejoin="round"
+                                stroke-width="2"
+                                d="M1 5.917 5.724 10.5 15 1.5"
+                              />
+                            </svg>
+                            <span
+                              class="text-xs font-semibold text-blue-700 dark:text-blue-500"
+                              >Copied</span
+                            >
+                          </span>
+                        </button>
+                      </div>
+                    </div>
                   </li>
                 </ul>
               </div>
@@ -235,7 +310,7 @@
       </div>
     </div>
   </div>
-  {% endblock pcontent %}
+  {% endfor %} {% endblock pcontent %}
   <div class="dark:text-white">
     <button
       type="button"
@@ -243,12 +318,14 @@
     >
       My Profile
     </button>
-    <button
+    <a
       type="button"
+      href="{% url "updateprofile" %}"
+
       class="text-white bg-gradient-to-r from-pink-400 via-pink-500 to-pink-600 hover:bg-gradient-to-br focus:ring-4 focus:outline-none focus:ring-pink-300 dark:focus:ring-pink-800 shadow-lg shadow-pink-500/50 dark:shadow-lg dark:shadow-pink-800/80 font-medium rounded-lg text-sm px-5 py-2.5 text-center me-2 mb-2"
     >
       Edit Profile
-    </button>
+    </a>
     <button
       type="button"
       class="text-white bg-gradient-to-r from-purple-500 via-purple-600 to-purple-700 hover:bg-gradient-to-br focus:ring-4 focus:outline-none focus:ring-purple-300 dark:focus:ring-purple-800 shadow-lg shadow-purple-500/50 dark:shadow-lg dark:shadow-purple-800/80 font-medium rounded-lg text-sm px-5 py-2.5 text-center me-2 mb-2"
