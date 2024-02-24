@@ -1,5 +1,6 @@
 from django.db import models
 from django.contrib.auth.models import User
+from django.contrib import admin
 # Create your models here.
 
 
@@ -16,3 +17,24 @@ class UserProfile(models.Model):
     fb = models.CharField(max_length=150, blank=True)
     insta = models.CharField(max_length=150, blank=True)
     phone = models.BigIntegerField(blank=True)
+
+
+class Posts(models.Model):
+    title = models.CharField(max_length=150)
+    description = models.TextField()
+    tags = models.CharField(max_length=150, null=True, blank=True)
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    date = models.DateField(auto_now=True)
+
+
+@admin.register(Posts)
+class PostsAdmin(admin.ModelAdmin):
+    list_display = ('title', 'description', 'tags', 'user', 'date')
+    search_fields = ['title']
+    list_filter = ['title']
+
+
+class collaborate(models.Model):
+    post = models.ForeignKey(Posts, on_delete=models.CASCADE)
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    description = models.TextField()

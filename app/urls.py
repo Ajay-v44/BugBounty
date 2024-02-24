@@ -8,6 +8,9 @@ urlpatterns = [
     path('userprofile/', user_profile, name='userprofile'),
     path('logout/', logout_user, name='logout'),
     path('addprofile/', addUserProfile, name='addprofile'),
-    path('updateprofile/', updateUserProfile, name='updateprofile')
+    path('updateprofile/', updateUserProfile, name='updateprofile'),
+    path('createpost/',createPost,name='createpost'),
+    path('sentcollabs/<int:id>/',sentCollabarationMessage,name='sentcollabs'),
+    path('viewcollabs/',viewCollabs,name='viewcollabs')
 
 ]

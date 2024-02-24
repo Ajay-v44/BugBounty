@@ -5,11 +5,13 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User, auth
 from django.contrib.auth import authenticate, login, logout
 from .models import *
+from django.shortcuts import get_object_or_404
 # Create your views here.
 
 
 def index(request):
-    return render(request, 'index.html')
+    query = Posts.objects.all().order_by('?')
+    return render(request, 'index.html', {"query": query})
 
 
 def register(request):
@@ -54,6 +56,7 @@ def logout_user(request):
     return redirect(login_user)
 
 
+@login_required(login_url='/login')
 def user_profile(request):
     query = UserProfile.objects.filter(user=request.user)
     if query:
@@ -103,3 +106,40 @@ def updateUserProfile(request):
         return redirect(user_profile)
 
     return render(request, 'addprofile.html', {"query": context})
+
+
+@login_required(login_url='/login')
+def createPost(request):
+    try:
+        if request.method == "POST":
+            Posts.objects.create(
+                user=request.user, title=request.POST['title'], description=request.POST['describtion'], tags=request.POST['tags'])
+            messages.info(request, "Post Created Successfully")
+            return redirect(user_profile)
+        return render(request, 'createpost.html')
+    except Exception as e:
+        print(e)
+
+
+@login_required(login_url='/login')
+def sentCollabarationMessage(request, id):
+    if request.method == "POST":
+        post_instance = get_object_or_404(
+            Posts, pk=id)  # Retrieve the Posts instance
+        collaborate.objects.create(
+            user=request.user, post=post_instance, description=request.POST['message'])  # Assign post_instance to the post field
+        messages.info(request, 'Message sent successfully')
+        return redirect('index')
+
+
+@login_required(login_url='/login')
+def viewCollabs(request):
+    list = []
+    instance = Posts.objects.filter(user=request.user)
+    for val in instance:
+        find = collaborate.objects.filter(post=val.id)
+        if find:
+            list.extend(find)
+            
+    print(list)
+    return render(request, 'viewcollabrequests.html',{"list":list})
