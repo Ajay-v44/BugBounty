@@ -6,6 +6,7 @@ from django.contrib import admin
 
 class UserProfile(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
+    username=models.CharField( max_length=150)
     profilepicture = models.ImageField(
         upload_to='images', height_field=None, width_field=None, max_length=None)
     banner = models.ImageField(
@@ -38,3 +39,8 @@ class collaborate(models.Model):
     post = models.ForeignKey(Posts, on_delete=models.CASCADE)
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     description = models.TextField()
+
+
+@admin.register(collaborate)
+class collaborateAdmin(admin.ModelAdmin):
+    list_display = ('post', 'user', 'description')

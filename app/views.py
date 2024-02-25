@@ -67,7 +67,7 @@ def user_profile(request):
 
 def addUserProfile(request):
     if request.method == "POST":
-        UserProfile.objects.create(user=request.user, profilepicture=request.FILES.get('profile'), banner=request.FILES.get(
+        UserProfile.objects.create(user=request.user, profilepicture=request.FILES.get('profile'),username=request.user, banner=request.FILES.get(
             'banner'), about=request.POST['about'], phone=request.POST['phone'], bugcrowd=request.POST['bugcrowd'], fb=request.POST['facebook'], twitter=request.POST['twitter'], insta=request.POST['instagram'])
         messages.info(request, "Data Updated Sccessfully")
         return redirect(user_profile)
@@ -143,3 +143,7 @@ def viewCollabs(request):
             
     print(list)
     return render(request, 'viewcollabrequests.html',{"list":list})
+
+def viewPublicProfile(request,username):
+    query=UserProfile.objects.filter(username=username)
+    return render(request,'publicprofile.html',{"query":query})
