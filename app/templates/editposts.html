@@ -58,10 +58,12 @@
 </div>
 {% block posts %}
 <form class="max-w-sm md:max-w-xl mx-auto" method="post">
+
     {% csrf_token %}
+   
     <div class="mb-5">
         <label for="large-input" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Title</label>
-        <input type="text" id="large-input" name="title" class="block w-full p-4 text-gray-900 border border-gray-300 rounded-lg bg-gray-50 text-base focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" required>
+        <input type="text" value="{{query.title}}" id="large-input" name="title" class="block w-full p-4 text-gray-900 border border-gray-300 rounded-lg bg-gray-50 text-base focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" required>
     </div>
     <div class="mb-5">
         
@@ -144,17 +146,18 @@
         </div>
         <div class="px-4 py-2 bg-white rounded-b-lg dark:bg-gray-800">
             <label for="editor" class="sr-only">Publish post</label>
-            <textarea id="editor" name="describtion" rows="8" class="block w-full px-0 text-sm text-gray-800 bg-white border-0 dark:bg-gray-800 focus:ring-0 dark:text-white dark:placeholder-gray-400" placeholder="Describe about post..." required /></textarea>
+            <textarea id="editor" name="describtion" rows="8" class="block w-full px-0 text-sm text-gray-800 bg-white border-0 dark:bg-gray-800 focus:ring-0 dark:text-white dark:placeholder-gray-400" placeholder="Describe about post..." required />{{query.description}}</textarea>
         </div>
     </div>
     </div>
     <div>
         <label for="small-input" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Name of vulnerability</label>
-        <input type="text" id="small-input" class="block w-full p-2 text-gray-900 border border-gray-300 rounded-lg bg-gray-50 text-xs focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" name="tags">
+        <input type="text" value="{{query.tags}}" id="small-input" class="block w-full p-2 text-gray-900 border border-gray-300 rounded-lg bg-gray-50 text-xs focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" name="tags">
     </div>
     <button type="submit" class="text-white w-auto md:w-1/2  mt-5  md:px-20 bg-[#2557D6] hover:bg-[#2557D6]/90 focus:ring-4 focus:ring-[#2557D6]/50 focus:outline-none font-medium rounded-lg text-sm px-5 py-2.5 text-center inline-flex items-center dark:focus:ring-[#2557D6]/50 me-2 mb-2">
-        Create Post
+        Update Post
         </button>
+       
   </form>
 {% endblock posts %}
 {% endblock content %}

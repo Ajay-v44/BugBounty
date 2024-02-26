@@ -12,6 +12,9 @@ urlpatterns = [
     path('createpost/', createPost, name='createpost'),
     path('sentcollabs/<int:id>/', sentCollabarationMessage, name='sentcollabs'),
     path('viewcollabs/', viewCollabs, name='viewcollabs'),
-    path('publicprofile/<str:username>/',viewPublicProfile, name='publicprofile')
-
+    path('publicprofile/<str:username>/',
+         viewPublicProfile, name='publicprofile'),
+    path('viewposts/', viewPosts, name='viewposts'),
+    path('deletepost/<int:id>/', deletePost, name='deletepost'),
+    path('updateposts/<int:id>/', updatePost, name='updateposts')
 ]

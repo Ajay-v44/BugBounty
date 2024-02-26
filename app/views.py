@@ -6,12 +6,22 @@ from django.contrib.auth.models import User, auth
 from django.contrib.auth import authenticate, login, logout
 from .models import *
 from django.shortcuts import get_object_or_404
+from django.core.paginator import Paginator
+from django.db.models import Q
 # Create your views here.
 
 
 def index(request):
-    query = Posts.objects.all().order_by('?')
-    return render(request, 'index.html', {"query": query})
+    data = Posts.objects.all()
+    if request.method == "POST":
+        name = request.POST['name']
+        data = Posts.objects.filter(Q(tags__icontains=name) | Q(
+            title__icontains=name) | Q(description__icontains=name)| Q(user__username__icontains=name))
+
+    paginator = Paginator(data, 6)
+    page_number = request.GET.get('page')
+    service_data = paginator.get_page(page_number)
+    return render(request, 'index.html', {"query": service_data})
 
 
 def register(request):
@@ -67,7 +77,7 @@ def user_profile(request):
 
 def addUserProfile(request):
     if request.method == "POST":
-        UserProfile.objects.create(user=request.user, profilepicture=request.FILES.get('profile'),username=request.user, banner=request.FILES.get(
+        UserProfile.objects.create(user=request.user, profilepicture=request.FILES.get('profile'), username=request.user, banner=request.FILES.get(
             'banner'), about=request.POST['about'], phone=request.POST['phone'], bugcrowd=request.POST['bugcrowd'], fb=request.POST['facebook'], twitter=request.POST['twitter'], insta=request.POST['instagram'])
         messages.info(request, "Data Updated Sccessfully")
         return redirect(user_profile)
@@ -115,7 +125,7 @@ def createPost(request):
             Posts.objects.create(
                 user=request.user, title=request.POST['title'], description=request.POST['describtion'], tags=request.POST['tags'])
             messages.info(request, "Post Created Successfully")
-            return redirect(user_profile)
+            return redirect(viewPosts)
         return render(request, 'createpost.html')
     except Exception as e:
         print(e)
@@ -140,10 +150,38 @@ def viewCollabs(request):
         find = collaborate.objects.filter(post=val.id)
         if find:
             list.extend(find)
-            
-    print(list)
-    return render(request, 'viewcollabrequests.html',{"list":list})
+    return render(request, 'viewcollabrequests.html', {"list": list})
 
-def viewPublicProfile(request,username):
-    query=UserProfile.objects.filter(username=username)
-    return render(request,'publicprofile.html',{"query":query})
+
+def viewPublicProfile(request, username):
+    query = UserProfile.objects.filter(username=username)
+    return render(request, 'publicprofile.html', {"query": query})
+
+
+@login_required(login_url='/login')
+def viewPosts(request):
+    query = Posts.objects.filter(user=request.user)
+    return render(request, 'viewposts.html', {"query": query})
+
+
+@login_required(login_url='/login')
+def deletePost(request, id):
+    query = Posts.objects.get(id=id)
+    if query.user == request.user:
+        query.delete()
+        messages.info(request, 'Post Deleted')
+        return redirect(viewPosts)
+    return redirect(viewPosts)
+
+
+@login_required(login_url='/login')
+def updatePost(request, id):
+    query = Posts.objects.get(id=id)
+    if request.method == "POST" and query.user == request.user:
+        query.title = request.POST['title']
+        query.description = request.POST['describtion']
+        query.tags = request.POST['tags']
+        query.save()
+        messages.info(request, 'Post updated Successfully')
+        return redirect(viewPosts)
+    return render(request, 'editposts.html', {"query": query})

@@ -43,7 +43,7 @@ INSTALLED_APPS = [
     'app',
     # thirparty apps
     'compressor',
-   
+    "django_browser_reload",
     'whitenoise.runserver_nostatic', 
 ]
 
@@ -57,6 +57,7 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     # thirparty middleware
     "whitenoise.middleware.WhiteNoiseMiddleware",
+    "django_browser_reload.middleware.BrowserReloadMiddleware",
 ]
 
 ROOT_URLCONF = 'bugbounty.urls'
