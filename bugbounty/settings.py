@@ -32,6 +32,7 @@ ALLOWED_HOSTS = []
 # Application definition
 
 INSTALLED_APPS = [
+    'channels',
     # 'jazzmin',
     'django.contrib.admin',
     'django.contrib.auth',
@@ -41,10 +42,12 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     # project apps
     'app',
+    'chatapp',
     # thirparty apps
     'compressor',
     "django_browser_reload",
-    'whitenoise.runserver_nostatic', 
+    'whitenoise.runserver_nostatic',
+
 ]
 
 MIDDLEWARE = [
@@ -79,6 +82,7 @@ TEMPLATES = [
 ]
 
 WSGI_APPLICATION = 'bugbounty.wsgi.application'
+ASGI_APPLICATION = 'bugbounty.asgi.application'
 
 
 # Database
@@ -91,6 +95,14 @@ DATABASES = {
     }
 }
 
+CHANNEL_LAYERS = {
+    "default": {
+        "BACKEND": "channels_redis.core.RedisChannelLayer",
+        "CONFIG": {
+            "hosts": [("127.0.0.1", 6379)],
+        },
+    },
+}
 
 # Password validation
 # https://docs.djangoproject.com/en/4.1/ref/settings/#auth-password-validators
@@ -134,7 +146,7 @@ STATICFILES_DIRS = [
 ]
 STATIC_ROOT = os.path.join(BASE_DIR, 'static')
 MEDIA_ROOT = 'static/img'
-STATICFILES_STORAGE="whitenoise.storage.CompressedManifestStaticFilesStorage"
+STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.1/ref/settings/#default-auto-field
 
