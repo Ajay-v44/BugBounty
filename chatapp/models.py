@@ -4,6 +4,10 @@ from django.contrib.auth.models import User
 
 
 class Mychats(models.Model):
-    me = models.ForeignKey(to=User,on_delete=models.CASCADE,related_name='it_me')
-    frnd = models.ForeignKey(to=User,on_delete=models.CASCADE,related_name='my_frnd')
+    me = models.ForeignKey(
+        to=User, on_delete=models.CASCADE, related_name='it_me')
+    frnd = models.ForeignKey(
+        to=User, on_delete=models.CASCADE, related_name='my_frnd')
     chats = models.JSONField(default=dict)
+    date = models.DateField(auto_now=True)
+    time = models.TimeField(auto_now_add=True)

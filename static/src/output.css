@@ -3159,8 +3159,8 @@ input:checked + .toggle-bg {
     inset: 0px;
   }
 
-  .md\:left-2\/3 {
-    left: 66.666667%;
+  .md\:left-3\/4 {
+    left: 75%;
   }
 
   .md\:order-1 {
