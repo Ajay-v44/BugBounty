@@ -16,7 +16,7 @@ def index(request):
     if request.method == "POST":
         name = request.POST['name']
         data = Posts.objects.filter(Q(tags__icontains=name) | Q(
-            title__icontains=name) | Q(description__icontains=name)| Q(user__username__icontains=name))
+            title__icontains=name) | Q(description__icontains=name) | Q(user__username__icontains=name))
 
     paginator = Paginator(data, 6)
     page_number = request.GET.get('page')
@@ -133,13 +133,13 @@ def createPost(request):
 
 @login_required(login_url='/login')
 def sentCollabarationMessage(request, id):
-    if request.method == "POST":
-        post_instance = get_object_or_404(
-            Posts, pk=id)  # Retrieve the Posts instance
-        collaborate.objects.create(
-            user=request.user, post=post_instance, description=request.POST['message'])  # Assign post_instance to the post field
-        messages.info(request, 'Message sent successfully')
-        return redirect('index')
+    # if request.method == "POST":
+    post_instance = get_object_or_404(
+        Posts, pk=id)  # Retrieve the Posts instance
+    collaborate.objects.create(
+        user=request.user, post=post_instance, description="I would like to collab")  # Assign post_instance to the post field
+    messages.info(request, 'Message sent successfully')
+    return redirect('index')
 
 
 @login_required(login_url='/login')
@@ -185,3 +185,27 @@ def updatePost(request, id):
         messages.info(request, 'Post updated Successfully')
         return redirect(viewPosts)
     return render(request, 'editposts.html', {"query": query})
+
+
+@login_required(login_url='/login')
+def myCollabs(request):
+    query = collaborate.objects.filter(user=request.user)
+    return render(request, 'viewmycollab.html', {"query": query})
+
+
+@login_required(login_url='/login')
+def deleteCollabs(request, id):
+    collaborate.objects.filter(id=id).delete()
+    messages.info(request, "cancelled your request")
+    return redirect(myCollabs)
+
+
+@login_required(login_url='/login')
+def updateCollabStatus(request, status, id):
+    collaborate.objects.filter(id=id).update(status=status)
+    messages.info(request, f"Status updated as {status}")
+    if status == "accepted":
+        query = UserProfile.objects.get(user=request.user)
+        query.collabs += 1
+        query.save()
+    return redirect(viewCollabs)

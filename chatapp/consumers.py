@@ -1,23 +1,30 @@
 import json
 from channels.generic.websocket import AsyncWebsocketConsumer
 from asgiref.sync import async_to_sync
-from .models import Mychats
+from .models import Mychats, Rooms
 from django.contrib.auth.models import User
-from time import sleep
 import datetime
 from channels.db import database_sync_to_async
-
+from channels.layers import get_channel_layer
 
 class MychatApp(AsyncWebsocketConsumer):
 
     async def connect(self):
-        print(f"================== {self.scope['user']}")
-        await self.accept()
-        await self.channel_layer.group_add(f"mychat_app_{self.scope['user']}", self.channel_name)
+        try:
+            user = self.scope['user']
+            if user.is_authenticated:
+                await self.accept()
+                await self.channel_layer.group_add(f"mychat_app_{user.username}", self.channel_name)
+                print("connected")
+            else:
+                print("closed")
+                # Handle unauthenticated users (e.g., close the connection)
+                await self.close()
+        except Exception as e:
+            print(e)
 
     async def disconnect(self, close_code):
         pass
-    # Receive message from WebSocket
 
     async def receive(self, text_data):
         text_data = json.loads(text_data)
@@ -35,20 +42,35 @@ class MychatApp(AsyncWebsocketConsumer):
         frnd = User.objects.get(username=text_data['user'])
         mychats, created = Mychats.objects.get_or_create(
             me=self.scope['user'], frnd=frnd)
-        # If the object was just created, initialize the 'chats' field as an empty dictionary
         if created:
             mychats.chats = {}
-        mychats.chats[str(datetime.datetime.now()) +
-                      "1"] = {'user': 'me', 'msg': text_data['msg']}
+
+        timestamp = str(datetime.datetime.now())
+        mychats.chats[timestamp + "1"] = {'user': 'me', 'msg': text_data['msg']}
         mychats.save()
+
+        try:
+            room, roomquery = Rooms.objects.get_or_create(
+                chat=mychats, username=self.scope['user'])
+        except Exception as e:
+            print(e)
+
         mychats, created = Mychats.objects.get_or_create(
             me=frnd, frnd=self.scope['user'])
-        # If the object was just created, initialize the 'chats' field as an empty dictionary
         if created:
             mychats.chats = {}
-        mychats.chats[str(datetime.datetime.now()) +
-                      "2"] = {'user': frnd.username, 'msg': text_data['msg']}
+
+        mychats.chats[timestamp + "2"] = {'user': self.scope['user'].username, 'msg': text_data['msg']}
         mychats.save()
+
+        try:
+            room, roomquery = Rooms.objects.get_or_create(
+                chat=mychats, username=text_data['user'])
+        except Exception as e:
+            print(e)
+        print(room.uniqueid,"id")
+        # Return the uniqueid
+        return room.uniqueid
 
     async def send_videonofication(self, event):
         await self.send(event['msg'])
@@ -59,4 +81,4 @@ class MychatApp(AsyncWebsocketConsumer):
 
     async def chat_message(self, event):
         print(event['message'])
-        await self.send(json.dumps("Total Online :- "+str(event['message'])))
+        await self.send(json.dumps("Total Online :- " + str(event['message'])))

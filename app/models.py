@@ -39,6 +39,7 @@ class collaborate(models.Model):
     post = models.ForeignKey(Posts, on_delete=models.CASCADE)
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     description = models.TextField()
+    status=models.CharField( max_length=50,default="pending")
 
 
 @admin.register(collaborate)

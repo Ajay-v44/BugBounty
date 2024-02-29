@@ -16,5 +16,8 @@ urlpatterns = [
          viewPublicProfile, name='publicprofile'),
     path('viewposts/', viewPosts, name='viewposts'),
     path('deletepost/<int:id>/', deletePost, name='deletepost'),
-    path('updateposts/<int:id>/', updatePost, name='updateposts')
+    path('updateposts/<int:id>/', updatePost, name='updateposts'),
+    path('mycollabs',myCollabs,name='mycollabs'),
+    path('deleetcollabs/<int:id>/',deleteCollabs,name='deleetcollabs'),
+    path('updatecollabstatus/<str:status>/<int:id>/',updateCollabStatus,name="updatecollabstatus")
 ]

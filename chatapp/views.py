@@ -1,7 +1,8 @@
 from django.shortcuts import render
-from .models import Mychats
+from .models import *
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
+
 # Create your views here.
 
 
@@ -16,7 +17,7 @@ def chat(request):
             mychats_data = Mychats.objects.get(me=request.user, frnd=frnd_)
         except (User.DoesNotExist, Mychats.DoesNotExist):
             pass
-
+    
     frnds = User.objects.filter(id__in=Mychats.objects.filter(
         me=request.user).values_list('frnd', flat=True))
 
