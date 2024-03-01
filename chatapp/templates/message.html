@@ -16,6 +16,15 @@
     "{% static 'images/logo.png' %}"
               type="image/x-icon">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" integrity="sha512-DTOQO9RWCH3ppGqcWaEA1BIZOC6xxalwEsw9c2QQeAIftl+Vegovlnee1c9QX4TctnWMn13TZye+giMm8e2LwA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+   <style>
+    .chat-messages {
+      flex: 1;
+      padding: 6px;
+      overflow-y: auto; /* Enable vertical scrolling */
+      scroll-behavior: smooth; /* Smooth scrolling behavior */
+    }
+    
+   </style>
     <script>
       // On page load or when changing themes, best to add inline in `head` to avoid FOUC
       if (
@@ -27,6 +36,12 @@
       } else {
         document.documentElement.classList.remove("dark");
       }
+      // JavaScript code to scroll chat messages container to the bottom
+document.addEventListener("DOMContentLoaded", function(event) {
+  var chatMessages = document.querySelector('.chat-messages');
+  chatMessages.scrollTop = chatMessages.scrollHeight;
+});
+
     </script>
   </head>
 
@@ -239,7 +254,9 @@
                 <nav class="nav flex flex-col items-center">
                     {% for frnd in frnds %}
                     <div class="flex items-center p-3 hover:bg-gray-700 rounded-lg">
+                      
                         <img src="{% static 'images/profilepic.webp' %}" alt="" class="rounded-full w-10 border object-fill">
+                        
                         <a class="nav-link text-white ml-3 hover:text-blue-400" href="/chat/msg/?user={{frnd.username}}" role="tab" aria-controls="v-pills-home" aria-selected="false">{{frnd.username}}</a>
                     </div>
                     {% endfor %}
@@ -251,7 +268,11 @@
                 <!-- Header -->
                 <div class="chat-header bg-blue-600 text-white py-4 px-6 flex items-center justify-between rounded-lg">
                     <div class="flex items-center gap-3">
-                        <img src="{% static 'images/profilepic.webp' %}" alt="" class="rounded-full w-12 md:w-20 border object-fill">
+                      {% if frndquery.profilepicture %}
+                      <img src="{{frndquery.profilepicture.url}}" alt="" class="rounded-full w-10 h-10 border object-fill frnd">
+                      {% else %}
+                        <img src="{% static 'images/profilepic.webp' %}" alt="" class="rounded-full w-10 border object-fill">
+                        {% endif %}
                         <h2 id="username" class="text-lg font-semibold capitalize"> {{ user_value }} <span class="red-dot inline-block w-2 h-2 rounded-full bg-red-500 ml-2"></span></h2>
                     </div>
                     <div class="flex gap-5">
@@ -262,13 +283,22 @@
                 </div>
                
                 <!-- Chat Messages -->
-                <div class="chat-messages flex-1 p-6 overflow-y-auto">
+                <div class="chat-messages flex-1 p-6 overflow-y-auto" id="chat-messages">
                  
                   
                     {% for key, chat in chats.items %}
+                  
                       {% if chat.user == 'me' %}
+                     
                       <div class="flex items-start gap-2.5 m-5">
-                          <img class="w-10 h-10 rounded-full" src="{% static 'images/profilepic.webp' %}" alt="Profile Image">
+                        {% if usrquery.profilepicture %}
+                        
+                        <img class="w-10 h-10 rounded-full mr-2 userme" src="{{usrquery.profilepicture.url}}" alt="Profile Image">
+                        
+                        {% else %}
+                        <img class="w-10 h-10 rounded-full mr-2" src="{% static 'images/profilepic.webp' %}" alt="Profile Image">
+
+                        {% endif %}
                           <div class="flex flex-col w-auto md:w-1/2 leading-1.5">
                               <div class="bg-blue-50 dark:bg-black p-4 rounded-lg shadow-md">
                                   <div class="flex items-center space-x-2 rtl:space-x-reverse">
@@ -305,17 +335,28 @@
                               </ul>
                           </div>
                       </div>
+                     
                       {% else %}
                       <div class="flex items-start justify-end mb-4">
+                       
+                        {% if frndquery.profilepicture %}
+                        
+                        <img class="w-10 h-10 rounded-full mr-2" src="{{frndquery.profilepicture.url}}" alt="Profile Image">
+                        
+                        {% else %}
+                        <img class="w-10 h-10 rounded-full mr-2" src="{% static 'images/profilepic.webp' %}" alt="Profile Image">
+
+                        {% endif %}
+                        
                           <!-- Move the receiver's avatar to the right -->
-                          <img class="w-10 h-10 rounded-full mr-2" src="{% static 'images/profilepic.webp' %}" alt="Profile Image">
                           <div class="max-w-xs mx-2">
                               <div class="bg-blue-50 dark:bg-blue-500 py-2 px-4 rounded-lg shadow-md">
                                   <h1 class="capitalize text-base ">{{ allchat.frnd }} <span class="text-xs">{{key|slice:":16"}} </span></h1>
                                   <textarea id="message" rows="4" class="block p-2.5 w-full text-sm text-gray-900 bg-gray-50 rounded-lg border border-gray-300 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" placeholder="{{ chat.msg }}"></textarea>
-                                  <span class="text-xs">{{ chat.time }}</span>
+                                  <span class="text-xs">{{ chat.time }} </span>
                               </div>
                           </div>
+                         
                       </div>
                       {% endif %}
                       {% endfor %}                                       
@@ -552,6 +593,11 @@
       <script src="{% static 'js/message.js' %}"></script>
     <script>
       document.addEventListener("DOMContentLoaded", function () {
+        const urlParams = new URLSearchParams(window.location.search);
+
+        // Extract the value of the "user" parameter
+        const userurl = urlParams.get("user");
+        var chatMessages = document.getElementById('chatMessages');
         // Get the query parameter 'user' from the URL
         const queryParams = new URLSearchParams(window.location.search);
         const user = queryParams.get("user");
@@ -580,24 +626,44 @@
            value = spanElement.textContent;
         }
         
-        
-        // Now, 'value' contains the text content of the <span> element
-        console.log(value,"wanted");
-        // Function to append a received message to chat messages
+        function scrollToBottom() {
+          chatMessages.scrollTop = chatMessages.scrollHeight;
+        }
+      
+        // Function to check for new messages and scroll to bottom if added
+        function checkForNewMessages() {
+          // Select all elements with class 'js-message' inside the chat messages container
+          var newMessages = chatMessages.querySelectorAll('.js-message');
+      
+          // If new messages are found, scroll to the bottom
+          if (newMessages.length > 0) {
+            scrollToBottom();
+          }
+        }
+        setInterval(checkForNewMessages, 100);
         function appendMessage(user, message) {
-         
-          const urlParams = new URLSearchParams(window.location.search);
+          var srcValue ="{% static 'images/profilepic.webp' %}"
+          let WhoIsUser=""
+          if (user==="frnd" && (document.querySelector('.frnd') ||document.querySelector('.userme')) ){
+            var imgElement = document.querySelector('.frnd');
+             srcValue = imgElement.getAttribute('src');
+             WhoIsUser=userurl
+            console.log(srcValue);
+          }else{
+            var imgElement = document.querySelector('.userme');
+            srcValue=imgElement.getAttribute('src')
+            WhoIsUser=user
+          }
 
-// Extract the value of the "user" parameter
-const userurl = urlParams.get("user");
+          
           console.log(user,"user",userurl,usernames)
           if (userurl === usernames || user === value ){
             const chatCard = document.createElement("div");
-            chatCard.classList.add("flex", "items-start", "gap-2.5", "m-5");
+            chatCard.classList.add("flex", "items-start", "gap-2.5", "m-5","js-messages");
             
             const profileImg = document.createElement("img");
             profileImg.classList.add("w-10", "h-10", "rounded-full");
-            profileImg.src = "{% static 'images/profilepic.webp' %}";
+            profileImg.src = srcValue;
             profileImg.alt = "Profile Image";
             chatCard.appendChild(profileImg);
     
@@ -610,10 +676,23 @@ const userurl = urlParams.get("user");
             nameTimeContainer.classList.add("flex", "items-center", "space-x-2", "rtl:space-x-reverse");
             const nameSpan = document.createElement("span");
             nameSpan.classList.add("text-sm", "font-semibold", "text-gray-900", "dark:text-white");
-            nameSpan.textContent = user;
+            nameSpan.textContent = WhoIsUser;
             const timeSpan = document.createElement("span");
             timeSpan.classList.add("text-sm", "font-normal", "text-gray-500", "dark:text-gray-400");
-            timeSpan.textContent = "11:46";
+
+// Create a new Date object
+var now = new Date();
+
+// Get the current date and time components
+var year = now.getFullYear();
+var month = now.getMonth() + 1; // Month is zero-based, so add 1
+var day = now.getDate();
+var hours = now.getHours();
+var minutes = now.getMinutes();
+
+// Format the date and time as desired
+var formattedDateTime = year + '-' + month + '-' + day + ' ' + hours + ':' + minutes ;
+            timeSpan.textContent = formattedDateTime;
             nameTimeContainer.appendChild(nameSpan);
             nameTimeContainer.appendChild(timeSpan);
             
@@ -673,6 +752,7 @@ const userurl = urlParams.get("user");
     
             chatMessages.appendChild(chatCard);
           }
+          scrollToBottom();
             
         }
         let usernames="m0"
