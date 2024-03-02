@@ -7,6 +7,7 @@ import datetime
 from channels.db import database_sync_to_async
 from channels.layers import get_channel_layer
 
+
 class MychatApp(AsyncWebsocketConsumer):
 
     async def connect(self):
@@ -23,19 +24,26 @@ class MychatApp(AsyncWebsocketConsumer):
         except Exception as e:
             print(e)
 
+
     async def disconnect(self, close_code):
         pass
 
     async def receive(self, text_data):
         text_data = json.loads(text_data)
+        uniqueid = await self.save_chat(text_data)
+        print("i am  called receive",uniqueid,text_data)
         await self.channel_layer.group_send(
             f"mychat_app_{text_data['user']}",
             {
                 'type': 'send.msg',
-                'msg': text_data['msg']
+                'msg': text_data['msg'],
+                'uniqueid': uniqueid
             }
         )
-        await self.save_chat(text_data)
+
+    async def send_uniqueid(self, event):
+            uniqueid = event.get('uniqueid')
+            await self.send(json.dumps({'uniqueid': uniqueid}))
 
     @database_sync_to_async
     def save_chat(self, text_data):
@@ -46,7 +54,8 @@ class MychatApp(AsyncWebsocketConsumer):
             mychats.chats = {}
 
         timestamp = str(datetime.datetime.now())
-        mychats.chats[timestamp + "1"] = {'user': 'me', 'msg': text_data['msg']}
+        mychats.chats[timestamp +
+                      "1"] = {'user': 'me', 'msg': text_data['msg']}
         mychats.save()
 
         try:
@@ -60,7 +69,8 @@ class MychatApp(AsyncWebsocketConsumer):
         if created:
             mychats.chats = {}
 
-        mychats.chats[timestamp + "2"] = {'user': self.scope['user'].username, 'msg': text_data['msg']}
+        mychats.chats[timestamp +
+                      "2"] = {'user': self.scope['user'].username, 'msg': text_data['msg']}
         mychats.save()
 
         try:
@@ -68,16 +78,17 @@ class MychatApp(AsyncWebsocketConsumer):
                 chat=mychats, username=text_data['user'])
         except Exception as e:
             print(e)
-        print(room.uniqueid,"id")
         # Return the uniqueid
         return room.uniqueid
 
     async def send_videonofication(self, event):
         await self.send(event['msg'])
-
+    
     async def send_msg(self, event):
-        print(event['msg'])
-        await self.send(event['msg'])
+        msg = event['msg']
+        uniqueid = event.get('uniqueid', None)
+        data = {'msg': msg, 'uniqueid': uniqueid}
+        await self.send(json.dumps(data))
 
     async def chat_message(self, event):
         print(event['message'])
