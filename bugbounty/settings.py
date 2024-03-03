@@ -47,12 +47,14 @@ INSTALLED_APPS = [
     'compressor',
     "django_browser_reload",
     'whitenoise.runserver_nostatic',
+    "corsheaders",
 
 ]
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
+     "corsheaders.middleware.CorsMiddleware",
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
@@ -62,7 +64,7 @@ MIDDLEWARE = [
     "whitenoise.middleware.WhiteNoiseMiddleware",
     "django_browser_reload.middleware.BrowserReloadMiddleware",
 ]
-
+ALLOWED_HOSTS = ["*"]
 ROOT_URLCONF = 'bugbounty.urls'
 
 TEMPLATES = [
