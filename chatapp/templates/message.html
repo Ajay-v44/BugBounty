@@ -597,9 +597,9 @@ document.addEventListener("DOMContentLoaded", function(event) {
         // Extract the value of the "user" parameter
         const userurl = urlParams.get("user");
         var chatMessages = document.getElementById('chatMessages');
-        var chathead=document.getElementById('chathead')
-        const chatheadM=chathead.getAttribute('data-my')
-        const chatheadF=chathead.getAttribute('data-F')
+        //var chathead=document.getElementById('chathead')
+        //const chatheadM=chathead.getAttribute('data-my')
+        //const chatheadF=chathead.getAttribute('data-F')
         // Get the query parameter 'user' from the URL
         const queryParams = new URLSearchParams(window.location.search);
         const user = queryParams.get("user");
@@ -642,19 +642,29 @@ document.addEventListener("DOMContentLoaded", function(event) {
         setInterval(checkForNewMessages, 100);
         function appendMessage(user, message,uniqueid) {
           var srcValue ="{% static 'images/profilepic.webp' %}"
-          let WhoIsUser=""
-          if (user==="frnd" && (document.querySelector('.frnd') ||document.querySelector('.userme')) ){
-            var imgElement = document.querySelector('.frnd');
-             srcValue = imgElement.getAttribute('src');
-             WhoIsUser=userurl
-            
-          }else{
+          let WhoIsUser="Me"
+          if (user === "frnd" && (document.querySelector('.frnd') || document.querySelector('.userme'))) {
+            var imgElement = document.querySelector('.frnd') || document.querySelector('.userme');
+            if (imgElement) {
+                srcValue = imgElement.getAttribute('src');
+                console.log(srcValue, "frnd");
+                WhoIsUser = userurl;
+            } else {
+                console.error("Image element not found");
+            }
+        } else {
             var imgElement = document.querySelector('.userme');
-            srcValue=imgElement.getAttribute('src')
-            WhoIsUser=user
-          }
-          if (uniqueid === chatheadF || uniqueid === chatheadM ){
-          //if (chatheadF || chatheadM ){
+            if (imgElement) {
+                srcValue = imgElement.getAttribute('src');
+                console.log(srcValue, "me");
+                WhoIsUser = user;
+            } else {
+                console.error("Image element not found");
+            }
+        }
+        
+          //if (uniqueid === chatheadF || uniqueid === chatheadM ){
+          
 
             const chatCard = document.createElement("div");
             chatCard.classList.add("flex", "items-start", "gap-2.5", "m-5","js-messages");
@@ -749,7 +759,7 @@ var formattedDateTime = year + '-' + month + '-' + day + ' ' + hours + ':' + min
             chatCard.appendChild(dropdownContent);
     
             chatMessages.appendChild(chatCard);
-          }
+          
           scrollToBottom();
             
         }
@@ -786,10 +796,10 @@ ws.addEventListener("message", function (event) {
 // Handle Send button click
 sendButton.addEventListener('click', function () {
     const messageText = textarea.value;
-  console.log(uniqueid)
+ 
     if (messageText.trim() !== "") {
 if(uniqueid===undefined){
-  alert("empty")
+  //alert("empty")
 }
         sendMessage(messageText,uniqueid); // Pass uniqueid to sendMessage function
         appendMessage("me", messageText,uniqueid);

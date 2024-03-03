@@ -13,6 +13,9 @@ def chat(request):
     mychats_data = None
     user_value = request.GET.get('user')
     usrquery = UserProfile.objects.get(user=request.user)
+    romqM=None
+    romqF=None
+    frndquery=None
     if frnd_name:
         try:
             frndquery = UserProfile.objects.get(username=frnd_name)
@@ -25,11 +28,8 @@ def chat(request):
         except (User.DoesNotExist, Mychats.DoesNotExist):
             
             pass
-    else:
-        romqM=romqF=None
-        frndquery = None
     
-    
+    print(romqF,romqM)
     frnds = User.objects.filter(id__in=Mychats.objects.filter(
         me=request.user).values_list('frnd', flat=True))
     return render(request, 'message.html', {'my': mychats_data, 'chats': mychats_data.chats if mychats_data else None, 'frnds': frnds, "allchat": mychats_data, "user_value": user_value, "usrquery": usrquery, "frndquery": frndquery,"romqM":romqM,"romqF":romqF})
