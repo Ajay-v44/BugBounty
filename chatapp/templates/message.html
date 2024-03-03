@@ -266,7 +266,7 @@ document.addEventListener("DOMContentLoaded", function(event) {
             <!-- Chat Container -->
             <div class="chat-container flex flex-col flex-1 bg-white dark:bg-black">
                 <!-- Header -->
-                <div class="chat-header bg-blue-600 text-white py-4 px-6 flex items-center justify-between rounded-lg">
+                <div class="chat-header bg-blue-600 text-white py-4 px-6 flex items-center justify-between rounded-lg" id="chathead" data-my={{romqM.uniqueid}} data-F={{romqF.uniqueid}}>
                     <div class="flex items-center gap-3">
                       {% if frndquery.profilepicture %}
                       <img src="{{frndquery.profilepicture.url}}" alt="" class="rounded-full w-10 h-10 border object-fill frnd">
@@ -594,14 +594,15 @@ document.addEventListener("DOMContentLoaded", function(event) {
     <script>
       document.addEventListener("DOMContentLoaded", function () {
         const urlParams = new URLSearchParams(window.location.search);
-
         // Extract the value of the "user" parameter
         const userurl = urlParams.get("user");
         var chatMessages = document.getElementById('chatMessages');
+        //var chathead=document.getElementById('chathead')
+        //const chatheadM=chathead.getAttribute('data-my')
+        //const chatheadF=chathead.getAttribute('data-F')
         // Get the query parameter 'user' from the URL
         const queryParams = new URLSearchParams(window.location.search);
         const user = queryParams.get("user");
-    
         // Activate the tab based on the 'user' query parameter
         const tab = document.querySelector(`[href="/chat/msg/?user=${user}"]`);
         if (tab) {
@@ -617,12 +618,10 @@ document.addEventListener("DOMContentLoaded", function(event) {
         var textarea = document.querySelector(".message-input");
         var chatMessages = document.querySelector(".chat-messages");
         var ws;
-       
         const spanElement = document.querySelector('.wanted');
         let value="none"
         // Get the text content of the <span> element
         if (spanElement){
-          
            value = spanElement.textContent;
         }
         
@@ -641,23 +640,32 @@ document.addEventListener("DOMContentLoaded", function(event) {
           }
         }
         setInterval(checkForNewMessages, 100);
-        function appendMessage(user, message) {
+        function appendMessage(user, message,uniqueid) {
           var srcValue ="{% static 'images/profilepic.webp' %}"
-          let WhoIsUser=""
-          if (user==="frnd" && (document.querySelector('.frnd') ||document.querySelector('.userme')) ){
-            var imgElement = document.querySelector('.frnd');
-             srcValue = imgElement.getAttribute('src');
-             WhoIsUser=userurl
-            console.log(srcValue);
-          }else{
+          let WhoIsUser="Me"
+          if (user === "frnd" && (document.querySelector('.frnd') || document.querySelector('.userme'))) {
+            var imgElement = document.querySelector('.frnd') || document.querySelector('.userme');
+            if (imgElement) {
+                srcValue = imgElement.getAttribute('src');
+                console.log(srcValue, "frnd");
+                WhoIsUser = userurl;
+            } else {
+                console.error("Image element not found");
+            }
+        } else {
             var imgElement = document.querySelector('.userme');
-            srcValue=imgElement.getAttribute('src')
-            WhoIsUser=user
-          }
-
+            if (imgElement) {
+                srcValue = imgElement.getAttribute('src');
+                console.log(srcValue, "me");
+                WhoIsUser = user;
+            } else {
+                console.error("Image element not found");
+            }
+        }
+        
+          //if (uniqueid === chatheadF || uniqueid === chatheadM ){
           
-          console.log(user,"user",userurl,usernames)
-          if (userurl === usernames || user === value ){
+
             const chatCard = document.createElement("div");
             chatCard.classList.add("flex", "items-start", "gap-2.5", "m-5","js-messages");
             
@@ -751,19 +759,18 @@ var formattedDateTime = year + '-' + month + '-' + day + ' ' + hours + ':' + min
             chatCard.appendChild(dropdownContent);
     
             chatMessages.appendChild(chatCard);
-          }
+          
           scrollToBottom();
             
         }
         let usernames="m0"
         // Function to send a message via WebSocket
-        function sendMessage(message) {
+        function sendMessage(message,uniqueid) {
             if (ws && ws.readyState === WebSocket.OPEN) {
                 ws.send(JSON.stringify({ user: user, msg: message }));
                 val=JSON.stringify({ user: user})
                 const parsedVal = JSON.parse(val);
                  usernames=parsedVal.user  
-                console.log(usernames)                
             }
         }
       
@@ -774,35 +781,32 @@ var formattedDateTime = year + '-' + month + '-' + day + ' ' + hours + ':' + min
         ws.addEventListener("open", function (event) {
             console.log("WebSocket connection opened.");
         });
-        
         // Handle WebSocket message received
-        ws.addEventListener("message", function (event) {
-            console.log(event.data) 
-            appendMessage("frnd",event.data);
-        });
-    
-        // Handle WebSocket close
-        ws.addEventListener("close", function (event) {
-            console.log("WebSocket connection closed.");
-        });
-    
-        // Handle Send button click
-        sendButton.addEventListener('click', function () {
-            const messageText = textarea.value;
-    
-            if (messageText.trim() !== "") {
-                sendMessage(messageText);
-    
-                // Append the sent message to chat messages
-                appendMessage("me", messageText);
-    
-                // Clear the textarea
-                textarea.value = "";
-            }
-        });
-    });
-        
+let uniqueid
+// Handle WebSocket message received
+ws.addEventListener("message", function (event) {
 
+    var data = JSON.parse(event.data);
+    var messagereceive = data.msg;
+    uniqueid = data.uniqueid; // Assign uniqueid here
+    console.log(messagereceive, uniqueid);
+    appendMessage("frnd", messagereceive,uniqueid);
+});
+
+// Handle Send button click
+sendButton.addEventListener('click', function () {
+    const messageText = textarea.value;
+ 
+    if (messageText.trim() !== "") {
+if(uniqueid===undefined){
+  //alert("empty")
+}
+        sendMessage(messageText,uniqueid); // Pass uniqueid to sendMessage function
+        appendMessage("me", messageText,uniqueid);
+        textarea.value = ""; // Clear the textarea
+    }
+});
+    }); 
     </script>
 </body>
 </html>
