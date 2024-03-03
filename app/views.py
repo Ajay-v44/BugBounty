@@ -26,14 +26,14 @@ def index(request):
 
 def register(request):
     if request.method == "POST":
-        if User.objects.filter(email=request.POST['email']).exists() or User.objects.filter(username=request.POST['username']).exists():
+        if User.objects.filter(email=request.POST['regemail']).exists() or User.objects.filter(username=request.POST['username']).exists():
             messages.warning(request, 'Username / Email already exists')
         else:
             if request.POST['password'] != request.POST['repeat_password']:
                 messages.warning(request, 'Passwords dont match')
             else:
                 query = User.objects.create(first_name=request.POST['first_name'], last_name=request.POST['last_name'], username=request.POST[
-                    'username'], email=request.POST['email'], password=request.POST['password'])
+                    'username'], email=request.POST['regemail'], password=request.POST['password'])
                 query.set_password(request.POST['password'])
                 query.save()
                 messages.success(request, 'User Created Successfully')
