@@ -12,6 +12,7 @@ Django==4.2
 django-appconf==1.0.6
 django-browser-reload==1.12.1
 django-compressor==4.4
+django-cors-headers==4.3.1
 django-jazzmin==2.6.0
 hyperlink==21.0.0
 idna==3.6
