@@ -1,6 +1,6 @@
 {% extends 'base.html' %} {% block content %}
 <div class="px-5 md:px-10">
-  <form class="max-w-md mx-auto" method="post" enctype="multipart/form-data">
+  <form class="max-w-md mx-auto" method="post" enctype="multipart/form-data" id="userprofile">
     {% csrf_token %} {% if query %} {% for val in query %}
     <div class="relative z-0 w-full mb-5 group">
       <label
@@ -62,9 +62,6 @@
     <div class="relative z-0 w-full mb-5 group">
       <input
         type="number"
-        min="10"
-        max="10"
-        pattern="[0-9]{10}"
         name="phone"
         id="floating_phone"
         value="{{val.phone}}"

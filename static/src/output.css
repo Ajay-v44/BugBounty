@@ -3258,6 +3258,10 @@ input:checked + .toggle-bg {
     left: 75%;
   }
 
+  .md\:z-0 {
+    z-index: 0;
+  }
+
   .md\:order-1 {
     order: 1;
   }

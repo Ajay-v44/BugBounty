@@ -25,6 +25,15 @@ $.validator.addMethod("emailChecker", function (value, element) {
     )
   );
 });
+$.validator.addMethod("urlChecker", function (value, element) {
+  return this.optional(element) || /^(ftp|http|https):\/\/[^ "]+$/.test(value);
+});
+$.validator.addMethod("twitterUrlChecker", function (value, element) {
+  return (
+    this.optional(element) ||
+    /http(?:s)?:\/\/(?:www\.)?twitter\.com\/([a-zA-Z0-9_]+)/.test(value)
+  );
+});
 $("#regform").validate({
   rules: {
     regemail: {
@@ -100,6 +109,76 @@ $("#regform").validate({
     username: {
       required: "Please enter your username.",
       nowhitespace: "Username cannot contain white space.",
+    },
+  },
+  errorPlacement: function (error, element) {
+    error.insertAfter(element); // Show error below each input field
+    error.css("color", "red"); // Style error message with red color
+  },
+  submitHandler: function (form) {
+    form.submit(); // Submit the form if it's valid
+  },
+});
+$("#userprofile").validate({
+  rules: {
+    username: {
+      required: true,
+      minlength: 4,
+      nowhitespace: true,
+    },
+    about: {
+      required: true,
+      minlength: 10,
+    },
+    phone: {
+      required: true,
+      minlength: 10,
+      maxlength: 10,
+      digits: true,
+    },
+    bugcrowd: {
+      required: true,
+      urlChecker: true,
+    },
+    twitter: {
+      required: true,
+      twitterUrlChecker: true,
+    },
+    facebook: {
+      urlChecker: true,
+    },
+    instagram: {
+      urlChecker: true,
+    },
+  },
+  messages: {
+    username: {
+      required: "Please enter your username.",
+      nowhitespace: "Username cannot contain white space.",
+    },
+    about: {
+      required: "Enter About Yourself",
+      minlength: "Plaese tell something more",
+    },
+    phone: {
+      required: "Please enter your phone number.",
+      minlength: "Phone number must be 10 digits long.",
+      maxlength: "Phone number must be 10 digits long.",
+      digits: "Please enter only digits.",
+    },
+    bugcrowd: {
+      required: "Enter Your Bugcrowd Profile URL",
+      urlChecker: "Enter a valid url",
+    },
+    twitter: {
+      required: "Please Enter you Twitter Profile URL",
+      twitterUrlChecker: "Enter a valid url",
+    },
+    facebook: {
+      urlChecker: "Enter a valid url",
+    },
+    instagram: {
+      urlChecker: "Enter a valid url",
     },
   },
   errorPlacement: function (error, element) {
