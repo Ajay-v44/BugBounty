@@ -6,7 +6,7 @@ from django.contrib import admin
 
 class UserProfile(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
-    username=models.CharField( max_length=150)
+    username = models.CharField(max_length=150)
     profilepicture = models.ImageField(
         upload_to='images', height_field=None, width_field=None, max_length=None)
     banner = models.ImageField(
@@ -39,9 +39,21 @@ class collaborate(models.Model):
     post = models.ForeignKey(Posts, on_delete=models.CASCADE)
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     description = models.TextField()
-    status=models.CharField( max_length=50,default="pending")
+    status = models.CharField(max_length=50, default="pending")
 
 
 @admin.register(collaborate)
 class collaborateAdmin(admin.ModelAdmin):
     list_display = ('post', 'user', 'description')
+
+
+class ContactUs(models.Model):
+    username = models.CharField(max_length=50)
+    email = models.EmailField(max_length=254)
+    title = models.CharField(max_length=150)
+    message = models.TextField()
+    dateposted = models.DateTimeField(auto_now=True)
+
+@admin.register(ContactUs)
+class ContactUsAdmin(admin.ModelAdmin):
+    list_display=('username','email','title','message','dateposted')
