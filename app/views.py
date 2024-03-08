@@ -288,3 +288,6 @@ def contactUs(request):
 
 def page404(request):
     return render(request, '404.html')
+
+def page4042(request,exception):
+    return render(request, '404.html')

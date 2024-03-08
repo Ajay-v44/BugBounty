@@ -23,5 +23,6 @@ urlpatterns = [
     path('chat/',include('chatapp.urls')),
     path("__reload__/", include("django_browser_reload.urls")),
 ]
+handler404='app.views.page4042'
 urlpatterns+=static(settings.MEDIA_URL,document_root=settings.MEDIA_ROOT)
 # urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
