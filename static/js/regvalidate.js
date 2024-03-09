@@ -189,3 +189,30 @@ $("#userprofile").validate({
     form.submit(); // Submit the form if it's valid
   },
 });
+$("#loginform").validate({
+  rules:{
+    username:{
+      required:true,
+      nowhitespace: true
+    },
+    password:{
+      required:true
+    }
+  },
+  messages:{
+    username: {
+      required: "Please enter your username.",
+      nowhitespace: "Username cannot contain white space.",
+    },
+    password:{
+      required:"Please enter you password"
+    }
+  },
+  errorPlacement: function (error, element) {
+    error.insertAfter(element); // Show error below each input field
+    error.css("color", "red"); // Style error message with red color
+  },
+  submitHandler: function (form) {
+    form.submit(); // Submit the form if it's valid
+  },
+})
